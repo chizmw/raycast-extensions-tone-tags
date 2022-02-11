@@ -1,0 +1,25 @@
+#!bash
+set -euo pipefail
+
+# this requires us to have:
+# origin: our fork
+# upstream: git@github.com:raycast/extensions.git
+
+# don't do anything if we have uncommitted changes
+if [ "$(git diff --stat)" != '' ]; then
+    echo "[ERROR] uncommitted changes in project"
+    exit 1
+fi
+
+# make sure we're on our default branch
+git checkout $(git default-branch)
+
+# grab the upstream
+git fetch upstream
+
+# rebase our changes onto it
+# (no icky mege commits for no good reason)
+git rebase upstream/main
+
+# perform a "safe" force push to our fork
+git push --force-with-lease
